@@ -1,0 +1,25 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model GameSession {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  boardState Json
+  expiresAt  DateTime
+  users      User[]
+}
+
+model User{
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  name      String   @unique
+  leaseEnd  DateTime
+  gameSessionId String?
+  game          GameSession? @relation(fields: [gameSessionId], references: [id], onDelete: SetNull)
+}
