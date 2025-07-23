@@ -86,9 +86,10 @@ export default function Register() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          background: 'white',
         }}
       >
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" color="primary">
           Register
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
