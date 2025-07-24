@@ -10,9 +10,11 @@ generator client {
 model GameSession {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
-  boardState Json
+  boardState Json     @default(dbgenerated("'{}'"))
   expiresAt  DateTime
   users      User[]
+  currentPlayerId String?
+  oddTurn        Boolean @default(true)
 }
 
 model User{

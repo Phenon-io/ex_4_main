@@ -3,25 +3,25 @@ import { addMinutes } from 'date-fns'
 import prisma from "@/prisma/prisma";
 
 
-
-//user lease time in minutes
-const leaseTime = 60;
-
-// user lease time conversion to days, update first integer for day count.
-// const leaseTime = 1 * 60 * 24;
-
-
 export async function POST(request: Request) {
     try{
         const { name } = await request.json();
-        const expiresAt = addMinutes(new Date(), leaseTime)
+        const expiresAt = addMinutes(new Date(), Number(process.env.LEASE_TIME || 60))
         const user = await prisma.user.create({
             data: {
                 name,
                 leaseEnd: expiresAt,
             }
         })
-        return NextResponse.json({user}, {status: 201});
+        const response = NextResponse.json({user}, {status: 201});
+        response.cookies.set({
+            name: 'user-id',
+            value: user.id,
+            expires: expiresAt,
+            httpOnly: true,
+            path: '/',
+        });
+        return response;
     }
     catch(err){
         console.log(err);
