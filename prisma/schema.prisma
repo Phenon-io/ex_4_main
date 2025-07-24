@@ -15,6 +15,7 @@ model GameSession {
   users      User[]
   currentPlayerId String?
   oddTurn        Boolean @default(true)
+  userCount      Int @default(0)
 }
 
 model User{

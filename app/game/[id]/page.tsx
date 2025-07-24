@@ -26,8 +26,8 @@ export default function Game(){
         if(checkForGames()) continue;
         else{
             const game = prisma.gameSession.create({
-                data:{
-                    users: user,
+                data: {
+                    users: { connect: { id: user.id } },
 
             }})
         }
