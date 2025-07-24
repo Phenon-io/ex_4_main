@@ -2,6 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+
+interface Props {
+    gameSessionId: string;
+    userId: string;
+}
+
+
 // Polling to determine board state
 const useGameStatePolling = (gameSessionId: string) => {
     const [boardState, setBoardState] = useState<any>({});
@@ -54,11 +61,12 @@ const useGameStatePolling = (gameSessionId: string) => {
 
 
 
-export default function GameBoard({ gameSessionId }: { gameSessionId: string }) {
+export default function GameBoard(props: Props) {
+    const { gameSessionId, userId: myUserId } = props;
     const { boardState, currentPlayerId, oddTurn, error: pollingError } = useGameStatePolling(gameSessionId);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [moveError, setMoveError] = useState<string | null>(null);
-    const myUserId = 'current-user-id'; // TODO: Replace with actual user ID from session/auth
+    
 
 
     const handleClick = async (squareIndex: number) => {
