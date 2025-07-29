@@ -2,12 +2,13 @@ import prisma from "@/prisma/prisma";
 import { NextResponse } from "next/server";
 import { cookies } from 'next/headers';
 import { addMinutes } from "date-fns";
+import { AUTH_COOKIE_NAME } from "@/app/lib/constants";
 
 
 export async function POST(){
     // Update user lease and snag their uid
     const cookieStore = cookies();
-    const userIdCookie = (await cookieStore).get('user-id');
+    const userIdCookie = (await cookieStore).get(AUTH_COOKIE_NAME);
     const userId = userIdCookie?.value;
     if(!userId) return NextResponse.redirect(new URL('/'))
 
@@ -31,15 +32,22 @@ export async function POST(){
     if(process.env.GAME_BROWSER !== "true"){
         let game;
         const openGame = await prisma.gameSession.findFirst({
-            where:{
+            where: {
                 userCount: {
                     lt: 2
+                }
+            },
+            include: {
+                users: {
+                    select: { id: true }
                 }
             }
         });
 
         if (openGame) {
             // An open game exists, so join it.
+            // The first user in the list is the one who created the game.
+            const firstPlayerId = openGame.users[0]?.id;
             game = await prisma.gameSession.update({
                 where: {
                     id: openGame.id
@@ -50,7 +58,9 @@ export async function POST(){
                     },
                     userCount: {
                         increment: 1
-                    }
+                    },
+                    // Start the game by setting the current player.
+                    currentPlayerId: firstPlayerId,
                 }
             });
         } else {

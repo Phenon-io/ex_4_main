@@ -17,6 +17,7 @@ export async function GET( request: Request,
       select: {
         boardState: true,
         currentPlayerId: true,
+        oddTurn: true,
       },
     });
 
