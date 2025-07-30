@@ -6,9 +6,9 @@ import { addMinutes } from "date-fns";
 // for getting info on a room by its ID
 export async function GET(
     req: NextRequest, 
-    context: {params: {id: string}}
+    { params }: { params: Promise<{ id: string }>}
 ) {
-    const {id} = context.params;
+    const {id} = await params;
     const game = await prisma.gameSession.findUnique({
         where: {id},
         select: {
