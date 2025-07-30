@@ -6,7 +6,6 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const segments = url.pathname.split('/');
   const gameSessionId = segments[3];
-  console.log(gameSessionId);
 
   if (!gameSessionId) {
     return NextResponse.json({ message: 'Missing game session ID' }, { status: 400 });
@@ -44,9 +43,9 @@ function getNextPlayerId(players: { id: string }[], currentPlayerId: string | nu
 
 // ===POST===
 export async function POST( request: Request,
-  { params }: { params: { gameSessionId: string } }) {
+  { params }: { params: Promise<{ gameSessionId: string }> }) {
   
-  const { gameSessionId } = params;
+  const { gameSessionId } = await params;
 
   try {
     const body = await request.json();
