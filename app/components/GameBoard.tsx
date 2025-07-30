@@ -31,6 +31,7 @@ const useGameStatePolling = (gameSessionId: string) => {
                     setError("Game session not found. The other player may have left.");
                     setIsPolling(false);
                 }
+                else console.log(response);
                 return;
             }
             const data = await response.json();
@@ -48,7 +49,7 @@ const useGameStatePolling = (gameSessionId: string) => {
         if (!isPolling) return;
 
         fetchGameState();
-        const intervalId = setInterval(fetchGameState, 250); // Poll every 250ms
+        const intervalId = setInterval(fetchGameState, 500); // Poll every 250ms
         return () => clearInterval(intervalId);
     }, [fetchGameState, isPolling]);
 
@@ -96,6 +97,7 @@ export default function GameBoard(props: Props) {
         if (isGameOver || currentPlayerId !== myUserId || isSubmitting || boardState?.[squareIndex]) {
             return;
         }
+        console.log(squareIndex);
 
         setIsSubmitting(true);
         setMoveError(null);
@@ -118,7 +120,8 @@ export default function GameBoard(props: Props) {
     } else if (isDraw) {
         statusMessage = "It's a Draw!";
     } else if (currentPlayerId) {
-        statusMessage = currentPlayerId === myUserId ? 'Your Turn' : `Opponent's Turn`;
+        statusMessage = currentPlayerId == myUserId ? 'Your Turn' : `Opponent's Turn`;
+        console.log("Player's turn")
     } else {
         statusMessage = 'Waiting for opponent...';
     }

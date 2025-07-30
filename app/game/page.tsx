@@ -1,6 +1,10 @@
 'use client'
 import GameBoard from "@/app/components/GameBoard";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+
+
+
 
 interface Game{
     id: string;
@@ -17,6 +21,24 @@ export default function GamePage() {
     const [userId, setUserId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const handleDisconnect = async () => {
+            try {
+                await fetch('/api/game/disconnect', {
+                    method: 'POST',
+                    keepalive: true, // Important! Allows it to complete on unload
+                });
+            } catch (err) {
+                console.error("Error notifying server of disconnect:", err);
+            }
+        };
+
+        window.addEventListener('beforeunload', handleDisconnect);
+        return () => {
+            window.removeEventListener('beforeunload', handleDisconnect);
+        };
+    }, []);
 
     useEffect(() => {
         const getARoom = async () => {

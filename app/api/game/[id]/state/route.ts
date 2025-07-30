@@ -2,10 +2,11 @@ import prisma from "@/prisma/prisma";
 import { NextResponse } from "next/server";
 
 // ===GET===
-export async function GET( request: Request,
-  { params }: { params: { gameSessionId: string } }) {
-    
-    const { gameSessionId } = params;
+export async function GET( request: Request) {
+  const url = new URL(request.url);
+  const segments = url.pathname.split('/');
+  const gameSessionId = segments[3];
+  console.log(gameSessionId);
 
   if (!gameSessionId) {
     return NextResponse.json({ message: 'Missing game session ID' }, { status: 400 });
@@ -65,7 +66,7 @@ export async function POST( request: Request,
       if (gameSession.currentPlayerId !== userId) throw new Error('Not your turn');
 
       const currentBoard = (gameSession.boardState as { [key: number]: string }) || {};
-      const newBoardState = { ...currentBoard, [move.squareIndex]: move.value };
+      const newBoardState = { ...currentBoard, [move.squareIndex]: move.mark };
       const nextPlayerId = getNextPlayerId(gameSession.users, gameSession.currentPlayerId);
 
       // Save updates to the session
