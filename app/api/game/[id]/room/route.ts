@@ -4,9 +4,13 @@ import { cookies } from 'next/headers';
 import { addMinutes } from "date-fns";
 
 // for getting info on a room by its ID
-export async function GET(req: NextRequest, context: {params: {id: string}}) {
+export async function GET(
+    req: NextRequest, 
+    context: {params: {id: string}}
+) {
+    const {id} = context.params;
     const game = await prisma.gameSession.findUnique({
-        where: { id: context.params.id },
+        where: {id},
         select: {
             boardState: true,
             currentPlayerId: true,
