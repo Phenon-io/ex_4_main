@@ -1,5 +1,6 @@
 import prisma from "@/prisma/prisma";
 import { NextResponse } from "next/server";
+import { ErrorEvent } from "ws";
 
 function getNextPlayerId(players: { id: string }[], currentPlayerId: string | null): string | null {
   if (!currentPlayerId || players.length < 2) return players[0]?.id || null;
@@ -58,17 +59,20 @@ export async function POST(request: Request) {
 
     return NextResponse.json(updatedGameSession);
 
-  } catch (error: any) {
+  } catch (error:unknown) {
     console.error(`Failed to process move for game:`, error);
-
-    if (error.message === "Not your turn") {
-      return NextResponse.json({ message: error.message }, { status: 403 });
+    let message = "Failed to process move";
+    if (error instanceof Error) {
+        message = error.message;
     }
-    if (error.message === "Game not found") {
-      return NextResponse.json({ message: error.message }, { status: 404 });
+    if (message === "Not your turn") {
+      return NextResponse.json({ message: message }, { status: 403 });
     }
-    if (error.message === "Square already occupied") {
-      return NextResponse.json({ message: error.message }, { status: 409 });
+    if (message === "Game not found") {
+      return NextResponse.json({ message: message }, { status: 404 });
+    }
+    if (message === "Square already occupied") {
+      return NextResponse.json({ message: message }, { status: 409 });
     }
 
     return NextResponse.json({ message: "Failed to process move" }, { status: 500 });

@@ -25,8 +25,12 @@ export default function LogoutButton() {
             router.push('/');
             router.refresh();
 
-        } catch (err: any) {
-            setError(err.message || 'An unknown error occurred during logout.');
+        } catch (err: unknown) {
+            let message = 'Failed to log out';
+            if (err instanceof Error) {
+                message = err.message;
+            }
+            setError(message || 'An unknown error occurred during logout.');
         } finally {
             setIsLoggingOut(false);
         }

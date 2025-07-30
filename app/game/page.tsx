@@ -62,9 +62,13 @@ export default function GamePage() {
                 } else {
                     throw new Error('Invalid data received from server.');
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
+                let message = 'Failed to create or join a room';
+                if (err instanceof Error) {
+                    message = err.message;
+                }
                 console.error(err);
-                setError(err.message || 'An unknown error occurred.');
+                setError(message || 'An unknown error occurred.');
             } finally {
                 setIsLoading(false);
             }

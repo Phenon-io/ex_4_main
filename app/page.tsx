@@ -64,8 +64,12 @@ export default function Register() {
       if(process.env.GAME_BROWSER === "true") router.push('/game_browser');
       else router.push('/game');
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      let message = 'User registration failed';
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      setError(message);
       setIsSubmitting(false);
     }
   };

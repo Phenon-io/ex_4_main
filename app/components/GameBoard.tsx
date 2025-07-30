@@ -4,16 +4,21 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import LogoutButton from './LogoutButton';
 import { checkWinner, isBoardFull, type BoardArray, type Mark } from '@/app/utils/gameLogic';
 import type { CSSProperties } from 'react';
+import type { Move } from '../types/Move';
 
 interface Props {
     gameSessionId: string;
     userId: string;
 }
+type Mark = 'X' | 'O' | null;
 
+type BoardState = {
+  [key: number]: Mark; // e.g., { 0: 'X', 1: 'O', 2: null }
+};
 
 // Custom hook for polling the game state from the server.
 const useGameStatePolling = (gameSessionId: string) => {
-    const [boardState, setBoardState] = useState<any>({});
+    const [boardState, setBoardState] = useState<BoardState>({});
     const [currentPlayerId, setCurrentPlayerId] = useState<string | null>(null);
     const [oddTurn, setOddTurn] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -39,9 +44,13 @@ const useGameStatePolling = (gameSessionId: string) => {
             setCurrentPlayerId(data.currentPlayerId);
             setOddTurn(data.oddTurn);
             setError(null);
-        } catch (err: any) {
-        setError('Connection issue. Retrying...');
-        console.error(err);
+        } catch (err: unknown) {
+            let message = 'Failed to fetch game state';
+            if (err instanceof Error) {
+                message = err.message;
+            }
+            setError('Connection issue. Retrying...');
+            console.error(message);
         }
     }, [gameSessionId]);
 
@@ -61,7 +70,7 @@ const useGameStatePolling = (gameSessionId: string) => {
 };
 
 // API call to submit a move to the server.
-const makeMove = async (gameSessionId: string, userId: string, moveData: any) => {
+const makeMove = async (gameSessionId: string, userId: string, moveData: Move) => {
     const response = await fetch(`/api/game/${gameSessionId}/move`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,8 +106,6 @@ export default function GameBoard(props: Props) {
         if (isGameOver || currentPlayerId !== myUserId || isSubmitting || boardState?.[squareIndex]) {
             return;
         }
-        console.log(squareIndex);
-
         setIsSubmitting(true);
         setMoveError(null);
 
@@ -106,8 +113,12 @@ export default function GameBoard(props: Props) {
             const mark = oddTurn ? 'X' : 'O';
             const moveData = { squareIndex, mark };
             await makeMove(gameSessionId, myUserId, moveData);
-        } catch (err: any) {
-            setMoveError(err.message);
+        } catch (err: unknown) {
+            let message = 'Failed to make move';
+            if (err instanceof Error) {
+                message = err.message;
+            }
+            setMoveError(message);
         } finally {
             setIsSubmitting(false);
         }

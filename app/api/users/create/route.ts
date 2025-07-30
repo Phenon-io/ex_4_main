@@ -23,11 +23,16 @@ export async function POST(request: Request) {
             path: '/',
         });
         return response;
-    } catch(err: any) {
+    } catch(err: unknown) {
+        let message = 'User registration failed due to a server error.';
+        if (err instanceof Error) {
+            message = err.message;
+        }
         // Prisma unique constraint violation for the 'name' field
         if (err?.code === 'P2002' && err?.meta?.target?.includes('name')) {
             return NextResponse.json({ message: 'Username is already taken.' }, { status: 409 });
         }
+
 
         console.error("User creation error:", err);
         return NextResponse.json({ message: 'User registration failed due to a server error.' }, { status: 500 });
