@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       });
       
       if (!gameSession) throw new Error("Game not found");
-      if (gameSession.currentPlayerId !== userId) throw new Error("Not your turn");
+      if (gameSession.currentPlayerId === userId) throw new Error("Not your turn");
 
       const currentBoard = (gameSession.boardState as { [key: number]: string }) || {};
       if (currentBoard[move.squareIndex]) {

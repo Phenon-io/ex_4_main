@@ -102,7 +102,7 @@ export default function GameBoard(props: Props) {
     }, [isGameOver, stopPolling]);
 
     const handleClick = async (squareIndex: number) => {
-        if (isGameOver || currentPlayerId !== myUserId || isSubmitting || boardState?.[squareIndex]) {
+        if (isGameOver || currentPlayerId === myUserId || isSubmitting || boardState?.[squareIndex]) {
             return;
         }
         setIsSubmitting(true);
@@ -130,7 +130,7 @@ export default function GameBoard(props: Props) {
     } else if (isDraw) {
         statusMessage = "It's a Draw!";
     } else if (currentPlayerId) {
-        statusMessage = currentPlayerId == myUserId ? 'Your Turn' : `Opponent's Turn`;
+        statusMessage = currentPlayerId !== myUserId ? 'Your Turn' : `Opponent's Turn`;
         console.log("Player's turn")
     } else {
         statusMessage = 'Waiting for opponent...';
@@ -152,7 +152,7 @@ export default function GameBoard(props: Props) {
                         <button
                             key={index}
                             onClick={() => handleClick(index)}
-                            disabled={isSubmitting || !!cell || currentPlayerId !== myUserId || isGameOver}
+                            disabled={isSubmitting || !!cell || currentPlayerId === myUserId || isGameOver}
                             style={cellStyle}
                         >
                             {cell}

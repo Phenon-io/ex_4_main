@@ -57,8 +57,9 @@ export async function POST(){
     });
 
     let game;
+    
     if (openGame) {
-        const firstPlayerId = openGame.users[0]?.id;
+        let firstPlayerId = openGame.users[0].id;
         game = await prisma.gameSession.update({
             where: { id: openGame.id },
             data: {
@@ -69,6 +70,8 @@ export async function POST(){
         });
     } else {
         // No open games, so create one
+        
+
         game = await prisma.gameSession.create({
             data: {
                 users: { connect: { id: userId } },
