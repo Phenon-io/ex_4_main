@@ -1,10 +1,10 @@
 import prisma from "@/prisma/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from 'next/headers';
 import { addMinutes } from "date-fns";
 
 // for getting info on a room by its ID
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     const game = await prisma.gameSession.findUnique({
         where: { id: params.id },
         select: {
