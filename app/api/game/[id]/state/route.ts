@@ -2,7 +2,7 @@ import prisma from "@/prisma/prisma";
 import { NextResponse } from "next/server";
 
 // ===GET===
-export async function GET( request: Request) {
+export async function GET(request: Request) {
   const url = new URL(request.url);
   const segments = url.pathname.split('/');
   const gameSessionId = segments[3];
