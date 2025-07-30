@@ -29,7 +29,14 @@ export async function POST(request: Request) {
             message = err.message;
         }
         // Prisma unique constraint violation for the 'name' field
-        if (err?.code === 'P2002' && err?.meta?.target?.includes('name')) {
+        if (
+            typeof err === 'object' &&
+            err !== null &&
+            'code' in err &&
+            (err as any).code === 'P2002' &&
+            'meta' in err &&
+            (err as any).meta?.target?.includes('name')
+        ) {
             return NextResponse.json({ message: 'Username is already taken.' }, { status: 409 });
         }
 

@@ -10,10 +10,9 @@ interface Props {
     gameSessionId: string;
     userId: string;
 }
-type Mark = 'X' | 'O' | null;
 
 type BoardState = {
-  [key: number]: Mark; // e.g., { 0: 'X', 1: 'O', 2: null }
+  [key: number]: Mark;
 };
 
 // Custom hook for polling the game state from the server.
@@ -111,7 +110,7 @@ export default function GameBoard(props: Props) {
 
         try {
             const mark = oddTurn ? 'X' : 'O';
-            const moveData = { squareIndex, mark };
+            const moveData:Move = { squareIndex, mark };
             await makeMove(gameSessionId, myUserId, moveData);
         } catch (err: unknown) {
             let message = 'Failed to make move';

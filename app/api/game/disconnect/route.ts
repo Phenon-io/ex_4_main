@@ -17,16 +17,22 @@ export async function POST() {
 
         if (!user) return NextResponse.json({ success: false });
 
-        await prisma.gameSession.updateMany({
+        const sessions = await prisma.gameSession.findMany({
             where: {
                 users: { some: { id: userId } },
                 userCount: { lt: 2 }
-            },
-            data: {
+            }
+            });
+
+            for (const session of sessions) {
+            await prisma.gameSession.update({
+                where: { id: session.id },
+                data: {
                 users: { disconnect: { id: userId } },
                 userCount: { decrement: 1 }
-            }
-        });
+                }
+            });
+        }
 
         return NextResponse.json({ success: true });
     } catch (err) {
